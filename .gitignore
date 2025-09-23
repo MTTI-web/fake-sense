@@ -1,0 +1,10 @@
+# Packaged extension files
+*.zip
+*.xpi
+
+# Dependencies
+/node_modules
+
+# Build folder
+/dist
+/build

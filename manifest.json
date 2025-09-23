@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "Review Detective",
+  "version": "1.0",
+  "description": "Detects fake reviews on shopping websites.",
+  "homepage_url": "https://github.com/your-username/review-detective",
+  "icons": {
+    "48": "icons/detective-48.png"
+  },
+  "permissions": ["activeTab", "storage"],
+  "browser_action": {
+    "default_icon": "icons/detective-48.png",
+    "default_title": "Review Detective",
+    "default_popup": "popup/popup.html"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.amazon.com/*"],
+      "js": ["content_scripts/amazon_injector.js"],
+      "css": ["content_scripts/injector_styles.css"]
+    }
+  ],
+  "web_accessible_resources": ["icons/detective-48.png"]
+}
