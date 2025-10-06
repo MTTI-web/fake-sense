@@ -1,6 +1,6 @@
 // Create a popup element to inject into the page
 const popup = document.createElement("div");
-popup.id = "review-detective-popup";
+popup.id = "popup";
 popup.innerHTML = `
     <div id="review-detective-header">
         Review Detective
@@ -29,3 +29,4 @@ browser.runtime.onMessage.addListener((request) => {
     console.log("Analysis started on this page.");
   }
 });
+

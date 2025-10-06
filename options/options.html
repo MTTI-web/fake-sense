@@ -1,29 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Detective Settings</title>
-    <link rel="stylesheet" href="options.css">
-</head>
-<body>
-    <div class="options-container">
-        <h1>Settings</h1>
-        <form>
-            <div class="form-group">
-                <label for="api-key">API Key for Fake Review Service:</label>
-                <input type="text" id="api-key" name="api-key">
-            </div>
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="auto-run" name="auto-run">
-                    Automatically run analysis on page load
-                </label>
-            </div>
-            <button type="submit" id="save">Save Settings</button>
-        </form>
-         <p id="status" class="status-message"></p>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fake Review Detector Options</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        max-width: 500px;
+        margin: auto;
+      }
+      form div {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 10px 15px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+      #status {
+        color: green;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Options</h1>
+
+    <button type="button" id="test-api">Test API Connection</button>
+    <div id="status"></div>
+
     <script src="options.js"></script>
-</body>
+  </body>
 </html>

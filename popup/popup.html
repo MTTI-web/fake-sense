@@ -1,18 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Review Detective Popup</title>
-    <link rel="stylesheet" href="popup.css">
-</head>
-<body>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
     <div class="popup-container">
-        <h1>Review Detective</h1>
-        <p>Analysis for this page will appear here.</p>
-        <button id="analyzeBtn">Analyze Reviews</button>
-        <a href="../options/options.html" target="_blank">Settings</a>
+      <h1>Review Detective</h1>
+      <p>Analysis for this page will appear here.</p>
+      <button id="analyzeBtn">Analyze Reviews</button>
+      <a href="../options/options.html" target="_blank">Settings</a>
+      <!-- ... inside the <body> tag, after the <div id="status"></div> ... -->
+      <hr style="margin-top: 20px" />
+      <div>
+        <h2 style="margin-top: 20px">Test Your Skills!</h2>
+        <p>
+          Think you can spot a fake review? Take our quick quiz to find out.
+        </p>
+        <button type="button" id="open-quiz" style="background-color: #28a745">
+          Take the Quiz
+        </button>
+      </div>
     </div>
     <script src="popup.js"></script>
-</body>
+  </body>
 </html>

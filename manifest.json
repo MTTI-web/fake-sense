@@ -1,28 +1,29 @@
 {
   "manifest_version": 2,
-  "name": "Review Detective",
+  "name": "Fake Review Detector",
   "version": "1.0",
-  "description": "Detects fake reviews on shopping websites.",
-  "homepage_url": "https://github.com/your-username/review-detective",
-  "icons": {
-    "48": "icons/detective-48.png"
-  },
-  "permissions": ["activeTab", "storage"],
-  "browser_action": {
-    "default_icon": "icons/detective-48.png",
-    "default_title": "Review Detective",
-    "default_popup": "popup/popup.html"
-  },
-  "options_ui": {
-    "page": "options/options.html",
-    "open_in_tab": true
+  "description": "Detects fake reviews on shopping websites using a machine learning model.",
+  "permissions": ["storage", "activeTab", "http://localhost:5051/*"],
+  "options_page": "options.html",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "content_scripts": [
     {
-      "matches": ["*://*.amazon.com/*"],
-      "js": ["content_scripts/amazon_injector.js"],
-      "css": ["content_scripts/injector_styles.css"]
+      "matches": ["https://www.amazon.in/*"],
+      "js": ["content.js"],
+      "css": ["style.css"]
     }
   ],
-  "web_accessible_resources": ["icons/detective-48.png"]
+  "browser_action": {
+    "default_title": "Fake Review Detector",
+    "default_popup": "popup/popup.html"
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "web_accessible_resources": ["images/*.png", "quiz.html"]
 }
