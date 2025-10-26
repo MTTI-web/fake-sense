@@ -1,12 +1,10 @@
-/**
- * Saves options to browser.storage.sync.
- */
+// Saves options to browser.storage.sync.
+
 function saveOptions(e) {
   e.preventDefault();
   const apiKey = document.querySelector("#api-key").value;
   const autoRun = document.querySelector("#auto-run").checked;
 
-  // For Chrome, use chrome.storage.sync. For Firefox, use browser.storage.sync.
   const storage =
     typeof browser !== "undefined" ? browser.storage.sync : chrome.storage.sync;
 
@@ -25,17 +23,9 @@ function saveOptions(e) {
     });
 }
 
-/**
- * Restores the saved options from browser.storage.sync.
- */
 function restoreOptions() {
   const storage =
     typeof browser !== "undefined" ? browser.storage.sync : chrome.storage.sync;
-
-  function setCurrentChoice(result) {
-    document.querySelector("#api-key").value = result.apiKey || "";
-    document.querySelector("#auto-run").checked = result.autoRun || false;
-  }
 
   function onError(error) {
     console.log(`Error restoring options: ${error}`);
@@ -44,9 +34,6 @@ function restoreOptions() {
   storage.get(["apiKey", "autoRun"]).then(setCurrentChoice, onError);
 }
 
-/**
- * Fetches from the local API to test the connection.
- */
 async function fetchApi() {
   const status = document.getElementById("status");
   status.textContent = "Testing API connection...";

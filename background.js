@@ -4,7 +4,7 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Check if the message is for prediction
   if (request.action === "predict") {
-    const reviewText = request.data;
+    const reviewObj = request.data; // { text: ..., rating: ... }
 
     // Call the local API to get the authenticity score
     console.log("FETCHING FROM API");
@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        reviews: [reviewText], // API expects an array of reviews
+        reviews: [reviewObj],
       }),
     })
       .then((response) => {

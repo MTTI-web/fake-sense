@@ -1,7 +1,3 @@
-/**
- * Creates the modal that will display the authenticity score.
- * It's created once and then shown/hidden as needed.
- */
 function createModal() {
   const modal = document.createElement("div");
   modal.id = "frd-modal";
@@ -52,6 +48,18 @@ function injectButton(reviewElement) {
     }
     const reviewText = reviewBody.innerText;
 
+    const ratingElem = reviewElement.querySelector(
+      '[data-hook="review-star-rating"] span'
+    );
+    let reviewRating = 5; // default fallback
+    if (ratingElem) {
+      // Amazon's text is usually like "5.0 out of 5 stars"
+      const match = ratingElem.innerText.match(/^([\d.]+) out of 5/);
+      if (match) {
+        reviewRating = parseFloat(match[1]);
+      }
+    }
+
     // Show loading state in modal
     modalContent.innerHTML = `<div class="frd-loader"></div><p>Analyzing review...</p>`;
     modal.className = "frd-modal-visible";
@@ -60,7 +68,7 @@ function injectButton(reviewElement) {
     chrome.runtime.sendMessage(
       {
         action: "predict",
-        data: reviewText,
+        data: { text: reviewText, rating: reviewRating },
       },
       (response) => {
         if (chrome.runtime.lastError) {
