@@ -4,7 +4,7 @@
   "version": "1.0",
   "description": "Detects fake reviews on shopping websites using a machine learning model.",
   "permissions": ["storage", "activeTab", "http://localhost:5051/*"],
-  "options_page": "options.html",
+  "options_page": "options/options.html",
   "background": {
     "scripts": ["background.js"],
     "persistent": false
@@ -21,9 +21,7 @@
     "default_popup": "popup/popup.html"
   },
   "icons": {
-    "16": "images/icon16.png",
-    "48": "images/icon48.png",
-    "128": "images/icon128.png"
+    "48": "icons/icon48.png"
   },
   "web_accessible_resources": ["images/*.png", "quiz.html"]
 }
