@@ -1,0 +1,181 @@
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --light-bg: #f8f9fa;
+  --dark-text: #343a40;
+  --light-text: #ffffff;
+  --border-color: #dee2e6;
+  --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Optional global reset to keep pseudo-elements predictable */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  padding: 20px;
+  max-width: 650px;
+  margin: 40px auto;
+  background-color: var(--light-bg);
+  color: var(--dark-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#quiz-container {
+  background-color: var(--light-text);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+}
+
+h1 {
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 35px;
+  font-weight: 700;
+}
+
+.question-group {
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.question-group:last-of-type {
+  border-bottom: none;
+  margin-bottom: 30px;
+}
+
+/* Question label */
+.question-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+}
+
+/* Option row */
+.option {
+  background: #fdfdfd;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+/* Hover effect */
+.option:hover {
+  border-color: var(--primary-color);
+  background-color: #f0f8ff;
+}
+
+/* Hide native radio */
+.option input[type="radio"] {
+  display: none;
+}
+
+/* Text + custom bullet container */
+.option .option-label {
+  position: relative;
+  padding-left: 35px; /* space for the custom radio */
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+/* Outer ring (custom radio) */
+.option .option-label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--light-text);
+  transform: translateY(-50%);
+  /* Important: include border in the 20px box so centering math is correct */
+  box-sizing: border-box;
+}
+
+/* Inner dot (off by default; scaled in when checked) */
+.option .option-label::after {
+  content: "";
+  position: absolute;
+  left: 5px; /* centered for 20px ring with border-box */
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  transform: translateY(-50%) scale(0);
+  transition: transform 0.2s ease;
+}
+
+/* Checked state: show dot and accent ring */
+.option input[type="radio"]:checked + .option-label::after {
+  transform: translateY(-50%) scale(1);
+}
+
+.option input[type="radio"]:checked + .option-label::before {
+  border-color: var(--primary-color);
+}
+
+/* Button */
+button {
+  display: block;
+  width: 100%;
+  padding: 15px 20px;
+  border: none;
+  background-image: linear-gradient(to right, #007bff, #0056b3);
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+}
+
+/* Results */
+#quiz-results {
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: var(--light-bg);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  font-size: 1.3em;
+  font-weight: 600;
+  display: none; /* Hidden by default */
+  transition: all 0.3s ease;
+}
+
+#quiz-results.success {
+  background-color: #e9f7ef;
+  border-color: #a3d9b8;
+  color: #1d7a46;
+}
+
+#quiz-results.fail {
+  background-color: #fdeaea;
+  border-color: #f5b9b9;
+  color: #d9534f;
+}
