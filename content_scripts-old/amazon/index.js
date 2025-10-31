@@ -3,7 +3,7 @@
   const shared = await import(
     chrome.runtime.getURL("content_scripts/shared.js")
   );
-  const { enableAutoScoring } = shared;
+  const { injectButton, observeWithThrottle } = shared;
 
   const extractors = {
     getReviewText(reviewEl) {
@@ -23,18 +23,18 @@
     },
   };
 
-  const findReviews = () => document.querySelectorAll('[data-hook="review"]');
+  function processReviews() {
+    const reviews = document.querySelectorAll('[data-hook="review"]');
+    reviews.forEach((review) => injectButton(review, extractors));
+  }
 
-  enableAutoScoring({
-    findReviewElements: findReviews,
-    extractors,
-    observeRoots: [
-      document.getElementById("cm_cr-review_list"),
-      document.getElementById("reviews-medley-footer"),
-      document.body,
-    ],
-    rootMargin: "200px 0px",
-    threshold: 0.1,
-    maxConcurrent: 4,
-  });
+  processReviews();
+
+  [
+    document.getElementById("reviews-medley-footer"),
+    document.getElementById("cm_cr-review_list"),
+    document.body,
+  ]
+    .filter(Boolean)
+    .forEach((node) => observeWithThrottle(node, processReviews));
 })();

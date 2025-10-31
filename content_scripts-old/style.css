@@ -14,12 +14,10 @@
   line-height: 1;
   transition: background-color 0.2s ease-in-out, transform 0.1s ease;
 }
-
 .frd-button:hover {
   background-color: #0056b3;
   transform: translateY(-1px);
 }
-
 .frd-button:active {
   transform: translateY(0);
 }
@@ -33,7 +31,7 @@
   transform: translate(-50%, -50%);
   width: 90%;
   max-width: 400px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   padding: 25px 30px;
@@ -44,13 +42,11 @@
   color: #333;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
-
 .frd-modal-hidden {
   opacity: 0;
   transform: translate(-50%, -45%);
   pointer-events: none;
 }
-
 .frd-modal-visible {
   opacity: 1;
   transform: translate(-50%, -50%);
@@ -66,7 +62,6 @@
   font-weight: bold;
   cursor: pointer;
 }
-
 #frd-close-button:hover {
   color: #333;
 }
@@ -90,7 +85,6 @@
   font-size: 36px;
   font-weight: bold;
 }
-
 .frd-score-circle span {
   font-size: 14px;
   font-weight: 500;
@@ -101,7 +95,6 @@
   font-size: 16px;
   line-height: 1.5;
 }
-
 .frd-error {
   color: #dc3545;
 }
@@ -116,7 +109,6 @@
   animation: frd-spin 1s linear infinite;
   margin: 20px auto;
 }
-
 @keyframes frd-spin {
   0% {
     transform: rotate(0deg);

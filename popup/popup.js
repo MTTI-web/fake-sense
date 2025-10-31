@@ -12,7 +12,7 @@ document.getElementById("analyzeBtn").addEventListener("click", () => {
  */
 function openQuizPage() {
   // chrome.runtime.getURL() gets the full, correct path to the file
-  const quizUrl = chrome.runtime.getURL("quiz.html");
+  const quizUrl = chrome.runtime.getURL("quiz/index.html");
   chrome.tabs.create({ url: quizUrl });
 }
 

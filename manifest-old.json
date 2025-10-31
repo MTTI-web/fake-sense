@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+  "name": "Fake Review Detector",
+  "version": "1.0",
+  "description": "Detects fake reviews on shopping websites using a machine learning model.",
+  "permissions": ["storage", "activeTab", "http://localhost:5051/*"],
+  "options_page": "options/options.html",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.amazon.in/*"],
+      "js": ["content_scripts/amazon/index.js"],
+      "css": ["content_scripts/style.css"]
+    },
+    {
+      "matches": ["https://www.flipkart.com/*"],
+      "js": ["content_scripts/flipkart/index.js"],
+      "css": ["content_scripts/style.css"]
+    }
+  ],
+  "browser_action": {
+    "default_title": "Fake Review Detector",
+    "default_popup": "popup/popup.html"
+  },
+  "icons": {
+    "48": "icons/icon.svg"
+  },
+  "web_accessible_resources": ["images/*.png", "/quiz/index.html"]
+}
