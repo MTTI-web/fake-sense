@@ -64,6 +64,7 @@ async function fetchQuestions(n = 10) {
   if (!payload || !Array.isArray(payload.questions)) {
     throw new Error("Malformed response: missing questions array");
   }
+  console.log(payload.questions);
   return payload.questions;
 }
 

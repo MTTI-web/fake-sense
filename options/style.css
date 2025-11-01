@@ -309,6 +309,46 @@ section.features {
   margin-bottom: 0.6rem;
   box-shadow: var(--shadow-1);
 }
+
+/* Avatar keeps the original box size and rounding */
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  overflow: hidden; /* crop image to rounded square */
+  display: grid;
+  place-items: center;
+  background: linear-gradient(
+    135deg,
+    var(--accent, #7aa5ff),
+    var(--primary, #6be675)
+  ); /* fallback bg */
+  box-shadow: var(--shadow-1, 0 10px 30px rgba(0, 0, 0, 0.25));
+}
+
+/* Ensure the image fills the box and maintains aspect ratio */
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fill + crop to container */
+  display: block;
+}
+
+/* If you prefer responsive sizing instead of fixed px, use aspect ratio: */
+/*
+.avatar {
+  width: 4rem;
+  aspect-ratio: 1 / 1;    
+  border-radius: 16px;
+  overflow: hidden;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+*/
+
 .member h4 {
   margin: 0 0 0.2rem;
   font-size: var(--step-1);
