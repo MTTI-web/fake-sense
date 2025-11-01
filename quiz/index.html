@@ -14,11 +14,25 @@
     <div id="quiz-container">
       <h1>Spot the Fake Review!</h1>
 
-      <form id="quiz-form">
-        <!-- Filled dynamically by script.js -->
+      <div id="progress" aria-live="polite"></div>
+
+      <form id="quiz-form" novalidate>
+        <!-- Rendered dynamically -->
       </form>
 
-      <div id="quiz-results"></div>
+      <div id="controls" class="controls">
+        <button id="prev-btn" type="button" class="btn-secondary">
+          Previous
+        </button>
+        <button id="next-btn" type="button">Next</button>
+        <button id="finish-btn" type="button" class="hidden">
+          See My Score
+        </button>
+      </div>
+
+      <div id="quiz-results" class=""></div>
+
+      <div id="quiz-summary" class="summary hidden"></div>
     </div>
 
     <script src="./script.js"></script>

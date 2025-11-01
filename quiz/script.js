@@ -1,50 +1,67 @@
-// quiz/script.js
+// script.js
 
-// Try same-origin first; fall back to localhost:5051 (adjust if needed)
 // Simple and reliable for local dev:
 const API_BASE = "http://localhost:5051";
 
+// Constants
+const QUIZ_TITLE = "Spot the Fake Review!";
+const SUMMARY_TITLE = "Summary";
+
+// State
+let QUESTIONS = [];
+let CURRENT_INDEX = 0;
+let USER_ANSWERS = []; // selected choice index or null per question
+
+// Utilities
+function el(tag, opts = {}) {
+  const node = document.createElement(tag);
+  if (opts.className) node.className = opts.className;
+  if (opts.text) node.textContent = opts.text;
+  if (opts.html) node.innerHTML = opts.html;
+  if (opts.attrs)
+    Object.entries(opts.attrs).forEach(([k, v]) => node.setAttribute(k, v));
+  return node;
+}
+
+function getHeadingEl() {
+  return document.querySelector("#quiz-container h1"); // select the heading element [web:69]
+}
+
 /**
- * Utility to create a question group DOM node.
+ * Build a single-question group.
  * q = { qid, prompt, choices: [..], answer_index }
  */
-function createQuestionGroup(idx, q) {
-  const group = document.createElement("div");
-  group.className = "question-group";
+function renderQuestionGroup(idx, q, preselectedIdx = null) {
+  const group = el("div", { className: "question-group" });
   group.dataset.qid = q.qid;
   group.dataset.answerIndex = String(q.answer_index);
 
-  const qLabel = document.createElement("label");
-  qLabel.textContent = `${idx}. ${q.prompt}`;
+  const qLabel = el("label", { text: `${idx}. ${q.prompt}` });
   group.appendChild(qLabel);
 
   q.choices.forEach((choice, cIdx) => {
-    const option = document.createElement("div");
-    option.className = "option";
+    const option = el("div", { className: "option" });
 
-    const input = document.createElement("input");
-    input.type = "radio";
-    input.name = q.qid;
-    input.id = `${q.qid}_${cIdx}`;
-    input.value = String(cIdx);
+    const input = el("input", {
+      attrs: {
+        type: "radio",
+        name: "choice",
+        id: `${q.qid}_${cIdx}`,
+        value: String(cIdx),
+      },
+    });
 
-    const lab = document.createElement("label");
-    lab.className = "option-label";
+    if (preselectedIdx !== null && preselectedIdx === cIdx) {
+      input.checked = true; // restore selection
+    }
+
+    const lab = el("label", { className: "option-label", text: choice });
     lab.setAttribute("for", input.id);
-    lab.textContent = choice;
 
     option.appendChild(input);
     option.appendChild(lab);
     group.appendChild(option);
   });
-
-  // Placeholder for per-question feedback revealed after submit
-  const solution = document.createElement("div");
-  solution.className = "solution";
-  solution.style.marginTop = "8px";
-  solution.style.fontSize = "0.95em";
-  solution.style.display = "none";
-  group.appendChild(solution);
 
   return group;
 }
@@ -64,100 +81,196 @@ async function fetchQuestions(n = 10) {
   if (!payload || !Array.isArray(payload.questions)) {
     throw new Error("Malformed response: missing questions array");
   }
-  console.log(payload.questions);
   return payload.questions;
 }
 
-function ensureSubmitButton(form) {
-  let submitBtn = form.querySelector("button[type='submit']");
-  if (!submitBtn) {
-    submitBtn = document.createElement("button");
-    submitBtn.type = "submit";
-    submitBtn.textContent = "See My Score";
-    form.appendChild(submitBtn);
-  }
+function updateProgress() {
+  const prog = document.getElementById("progress");
+  prog.textContent = `Question ${CURRENT_INDEX + 1} of ${QUESTIONS.length}`;
 }
 
-function gradeQuiz(form, questions) {
+function renderCurrentQuestion() {
+  const form = document.getElementById("quiz-form");
+  const resultsDiv = document.getElementById("quiz-results");
+  const summaryDiv = document.getElementById("quiz-summary");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+  const finishBtn = document.getElementById("finish-btn");
+  const controls = document.getElementById("controls");
+  const progress = document.getElementById("progress");
+  const heading = getHeadingEl();
+
+  // Ensure quiz UI is visible when rendering questions again
+  controls.classList.remove("hidden"); // show controls [web:46]
+  progress.classList.remove("hidden"); // show progress [web:46]
+  summaryDiv.classList.add("hidden"); // hide summary [web:46]
+  resultsDiv.style.display = "none"; // hide banner
+  resultsDiv.className = "";
+  resultsDiv.textContent = "";
+
+  // Restore heading to quiz title
+  if (heading) heading.textContent = QUIZ_TITLE; // set visible text content [web:61]
+
+  // Clear and render the single current question
+  form.innerHTML = ""; // remove any previous question content [web:41]
+  const q = QUESTIONS[CURRENT_INDEX];
+  const pre = USER_ANSWERS[CURRENT_INDEX] ?? null;
+  const group = renderQuestionGroup(CURRENT_INDEX + 1, q, pre);
+  form.appendChild(group);
+
+  // Progress + Controls state
+  updateProgress();
+
+  prevBtn.disabled = CURRENT_INDEX === 0;
+  const onLast = CURRENT_INDEX === QUESTIONS.length - 1;
+  nextBtn.classList.toggle("hidden", onLast);
+  finishBtn.classList.toggle("hidden", !onLast);
+
+  // Scroll card to top for better UX
+  const container = document.getElementById("quiz-container");
+  container.scrollTop = 0;
+}
+
+function readSelection() {
+  const checked = document.querySelector('input[name="choice"]:checked');
+  return checked ? parseInt(checked.value, 10) : null;
+}
+
+function computeScore() {
   let score = 0;
-
-  questions.forEach((q) => {
-    const group = form.querySelector(`.question-group[data-qid="${q.qid}"]`);
-    const correctIdx = parseInt(group.dataset.answerIndex, 10);
-
-    const checked = form.querySelector(`input[name="${q.qid}"]:checked`);
-    const userIdx = checked ? parseInt(checked.value, 10) : null;
-
-    // Reveal per-question solution
-    const solutionEl = group.querySelector(".solution");
-    const correctText = q.choices[correctIdx];
-    if (userIdx === null) {
-      solutionEl.textContent = `Answer: ${correctText} (you did not answer)`;
-      solutionEl.style.color = "#d9534f";
-      solutionEl.style.display = "block";
-      return;
-    }
-
-    if (userIdx === correctIdx) {
-      score += 1;
-      solutionEl.textContent = `Correct ✓`;
-      solutionEl.style.color = "#1d7a46";
-      solutionEl.style.display = "block";
-    } else {
-      solutionEl.textContent = `Incorrect ✗ — Correct: ${correctText}`;
-      solutionEl.style.color = "#d9534f";
-      solutionEl.style.display = "block";
-    }
+  QUESTIONS.forEach((q, i) => {
+    const u = USER_ANSWERS[i];
+    if (u !== null && u === q.answer_index) score += 1;
   });
-
   return score;
 }
 
-async function loadQuiz(n = 10) {
+function showSummary() {
   const form = document.getElementById("quiz-form");
   const resultsDiv = document.getElementById("quiz-results");
+  const container = document.getElementById("quiz-summary");
+  const controls = document.getElementById("controls");
+  const progress = document.getElementById("progress");
+  const card = document.getElementById("quiz-container");
+  const heading = getHeadingEl();
 
-  // Reset UI
-  resultsDiv.style.display = "none";
-  resultsDiv.classList.remove("success", "fail");
-  resultsDiv.textContent = "";
-  form.innerHTML = ""; // clear all static content
+  // Update heading to "Summary"
+  if (heading) heading.textContent = SUMMARY_TITLE; // set summary heading text [web:61]
 
-  // Fetch and render
-  const questions = await fetchQuestions(n);
+  // Hide/remove the last rendered question
+  form.innerHTML = ""; // clears the question markup so it disappears [web:41]
+  controls.classList.add("hidden"); // hide nav controls so only summary shows [web:46]
+  progress.classList.add("hidden"); // hide "Question X of Y" [web:46]
 
-  questions.forEach((q, i) => {
-    const group = createQuestionGroup(i + 1, q);
-    form.appendChild(group);
+  // Score banner
+  const score = computeScore();
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  resultsDiv.style.display = "block";
+  resultsDiv.textContent = `You scored ${score} out of ${QUESTIONS.length} (${pct}%)`;
+  resultsDiv.classList.add(pct >= 70 ? "success" : "fail");
+
+  // Build full summary
+  container.innerHTML = "";
+  QUESTIONS.forEach((q, i) => {
+    const wrap = el("div", { className: "question-group" });
+    wrap.dataset.qid = q.qid;
+    wrap.dataset.answerIndex = String(q.answer_index);
+
+    const title = el("div", {
+      className: "summary-title",
+      text: `${i + 1}. ${q.prompt}`,
+    });
+    wrap.appendChild(title);
+
+    const userIdx = USER_ANSWERS[i];
+    const userText =
+      userIdx === null ? "You did not answer" : q.choices[userIdx];
+    const correctText = q.choices[q.answer_index];
+
+    const correct = userIdx !== null && userIdx === q.answer_index;
+
+    const userLine = el("div", {
+      className: correct ? "answer correct" : "answer incorrect",
+      text: correct ? `Your answer: ${userText} ✓` : `Your answer: ${userText}`,
+    });
+
+    const correctLine = el("div", {
+      className: "answer correct-key",
+      text: `Correct: ${correctText}`,
+    });
+
+    wrap.appendChild(userLine);
+    wrap.appendChild(correctLine);
+    container.appendChild(wrap);
   });
 
-  ensureSubmitButton(form);
+  // Retake action
+  const actions = el("div", { className: "summary-actions" });
+  const retry = el("button", {
+    className: "btn-secondary",
+    text: "Retake Quiz",
+  });
+  retry.type = "button";
+  retry.addEventListener("click", () => {
+    CURRENT_INDEX = 0;
+    USER_ANSWERS = new Array(QUESTIONS.length).fill(null);
 
-  // Bind submit handler
-  form.addEventListener("submit", function onSubmit(e) {
-    e.preventDefault();
+    // Reset panels and return to first question
+    resultsDiv.style.display = "none";
+    container.classList.add("hidden");
+    renderCurrentQuestion(); // also restores heading to quiz title
+  });
+  actions.appendChild(retry);
+  container.appendChild(actions);
 
-    // Disable multiple result appends by removing the listener after first run
-    form.removeEventListener("submit", onSubmit);
+  container.classList.remove("hidden");
 
-    const score = gradeQuiz(form, questions);
-    const pct = Math.round((score / questions.length) * 100);
+  // Ensure the card scrolls to top for the summary
+  card.scrollTop = 0;
+}
 
-    resultsDiv.style.display = "block";
-    resultsDiv.textContent = `You scored ${score} out of ${questions.length} (${pct}%)`;
-    if (pct >= 70) {
-      resultsDiv.classList.add("success");
-    } else {
-      resultsDiv.classList.add("fail");
+function wireControls() {
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+  const finishBtn = document.getElementById("finish-btn");
+
+  prevBtn.addEventListener("click", () => {
+    USER_ANSWERS[CURRENT_INDEX] = readSelection();
+    if (CURRENT_INDEX > 0) {
+      CURRENT_INDEX -= 1;
+      renderCurrentQuestion();
     }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    USER_ANSWERS[CURRENT_INDEX] = readSelection();
+    if (CURRENT_INDEX < QUESTIONS.length - 1) {
+      CURRENT_INDEX += 1;
+      renderCurrentQuestion();
+    }
+  });
+
+  finishBtn.addEventListener("click", () => {
+    USER_ANSWERS[CURRENT_INDEX] = readSelection();
+    showSummary();
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadQuiz(10).catch((err) => {
-    const resultsDiv = document.getElementById("quiz-results");
+async function loadQuiz(n = 10) {
+  const resultsDiv = document.getElementById("quiz-results");
+
+  try {
+    QUESTIONS = await fetchQuestions(n);
+    USER_ANSWERS = new Array(QUESTIONS.length).fill(null);
+    wireControls();
+    renderCurrentQuestion();
+  } catch (err) {
     resultsDiv.style.display = "block";
     resultsDiv.classList.add("fail");
     resultsDiv.textContent = `Error: ${err.message}`;
-  });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadQuiz(10);
 });
