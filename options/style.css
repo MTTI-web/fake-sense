@@ -1,0 +1,496 @@
+/* ---------------------------------
+   VerifyWise — Orange Theme CSS
+   (Drop-in replacement for previous CSS)
+---------------------------------- */
+
+/* Base + Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+:root {
+  /* Dark theme as default */
+  --bg: #0b0c10;
+  --surface: #121317;
+  --card: #171a22;
+  --text: #f3f5f8;
+  --muted: #b7c1cd;
+
+  /* Brand — Orange scheme */
+  --primary: #ff7a3d; /* vivid orange */
+  --accent: #ffb000; /* amber accent */
+  --danger: #ff6b88;
+  --warning: #ffd166;
+
+  --radius: 14px;
+  --shadow-1: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0 20px 60px rgba(0, 0, 0, 0.35);
+
+  /* Fluid type scale using clamp() */
+  --step--1: clamp(0.85rem, 0.74rem + 0.5vw, 1rem);
+  --step-0: clamp(1rem, 0.9rem + 0.6vw, 1.15rem);
+  --step-1: clamp(1.25rem, 1.05rem + 1vw, 1.6rem);
+  --step-2: clamp(1.6rem, 1.2rem + 1.6vw, 2.2rem);
+  --step-3: clamp(2.1rem, 1.5rem + 2.6vw, 3rem);
+  --step-4: clamp(2.6rem, 1.8rem + 3.6vw, 3.8rem);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --card: #f3f5f9;
+    --text: #0f1420;
+    --muted: #515c6e;
+
+    /* Orange scheme (light) */
+    --primary: #ff6a2a; /* slightly brighter in light */
+    --accent: #ffb84d; /* lighter amber */
+
+    --shadow-1: 0 12px 24px rgba(17, 24, 39, 0.08);
+    --shadow-2: 0 20px 50px rgba(17, 24, 39, 0.12);
+  }
+}
+
+/* Document */
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.4;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+button {
+  font: inherit;
+}
+
+/* Layout */
+.container {
+  width: min(1120px, 92vw);
+  margin: 0 auto;
+  padding: 0 0;
+}
+
+.section {
+  padding: clamp(2rem, 4vw, 3.5rem) 0;
+}
+
+/* Header / Nav */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: saturate(1.2) blur(10px);
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--muted) 20%, transparent);
+}
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 64px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.brand .logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-1);
+}
+.brand .logo svg {
+  width: 18px;
+  height: 18px;
+  color: white;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.nav-links a {
+  color: var(--muted);
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.nav-links a:hover {
+  color: var(--text);
+  background: color-mix(in oklab, var(--card) 72%, transparent);
+}
+
+.cta {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--primary) 80%, white),
+    color-mix(in oklab, var(--accent) 70%, white)
+  );
+  color: #0b0c10;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-1);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.cta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+}
+.cta.secondary {
+  background: none;
+  color: var(--text);
+  border: 1px solid color-mix(in oklab, var(--muted) 30%, transparent);
+  box-shadow: none;
+}
+
+/* Hero (section-scoped gradient) */
+.hero {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(2.5rem, 6vw, 5rem) 0 clamp(2rem, 5vw, 4rem);
+  overflow: clip;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* Orange-tinted layered gradient bound to the hero's own height */
+  background: radial-gradient(
+      120% 100% at 85% 0%,
+      color-mix(in oklab, var(--accent) 34%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      120% 100% at 0% 70%,
+      color-mix(in oklab, var(--primary) 28%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 98%, transparent),
+      color-mix(in oklab, var(--surface) 90%, transparent)
+    );
+  filter: saturate(1.1);
+}
+
+.hero-grid {
+  display: grid;
+  align-items: center;
+  gap: clamp(1.2rem, 3vw, 2rem);
+  grid-template-columns: 1fr;
+}
+.hero h1 {
+  font-size: var(--step-4);
+  line-height: 1.05;
+  margin: 0 0 0.6rem 0;
+  letter-spacing: -0.5px;
+}
+.hero p {
+  font-size: var(--step-0);
+  color: var(--muted);
+  margin: 0 0 1.2rem 0;
+}
+.actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+/* Features (container queries) */
+section.features {
+  container: features / inline-size;
+}
+.feature-grid {
+  display: grid;
+  gap: clamp(0.9rem, 2.5vw, 1.2rem);
+  grid-template-columns: 1fr;
+}
+@container features (min-width: 560px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@container features (min-width: 900px) {
+  .feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.card {
+  background: color-mix(in oklab, var(--card) 90%, transparent);
+  border: 1px solid color-mix(in oklab, var(--muted) 22%, transparent);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow-1);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.3s ease;
+  min-height: 180px;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-2);
+  background: color-mix(in oklab, var(--card) 98%, transparent);
+}
+.icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--accent) 65%, white),
+    color-mix(in oklab, var(--primary) 65%, white)
+  );
+  color: #0b0c10;
+  box-shadow: var(--shadow-1);
+  margin-bottom: 0.6rem;
+}
+.card h3 {
+  font-size: var(--step-1);
+  margin: 0.2rem 0 0.4rem;
+}
+.card p {
+  font-size: var(--step-0);
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Team */
+.team-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.member {
+  background: color-mix(in oklab, var(--card) 90%, transparent);
+  border: 1px solid color-mix(in oklab, var(--muted) 22%, transparent);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow-1);
+}
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  color: #0b0c10;
+  margin-bottom: 0.6rem;
+  box-shadow: var(--shadow-1);
+}
+.member h4 {
+  margin: 0 0 0.2rem;
+  font-size: var(--step-1);
+}
+.role {
+  color: var(--muted);
+  font-size: var(--step--1);
+  margin-bottom: 0.4rem;
+}
+
+/* Get the extension */
+.get {
+  background: color-mix(in oklab, var(--surface) 96%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--muted) 18%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--muted) 18%, transparent);
+}
+.get-inner {
+  display: grid;
+  gap: 1rem;
+  align-items: center;
+  grid-template-columns: 1.2fr 0.8fr;
+}
+@media (width < 900px) {
+  .get-inner {
+    grid-template-columns: 1fr;
+  }
+}
+.store-buttons {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+.store {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--accent) 18%, var(--surface)),
+    color-mix(in oklab, var(--primary) 18%, var(--surface))
+  );
+  color: var(--text);
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--muted) 20%, transparent);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: var(--shadow-1);
+}
+.store:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+}
+.store svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid color-mix(in oklab, var(--muted) 20%, transparent);
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  padding: 1.2rem 0;
+  color: var(--muted);
+  font-size: var(--step--1);
+}
+
+/* Quiz Modal */
+dialog#quiz {
+  width: min(820px, 92vw);
+  border: 1px solid color-mix(in oklab, var(--muted) 25%, transparent);
+  border-radius: 16px;
+  padding: 0;
+  background: color-mix(in oklab, var(--surface) 98%, transparent);
+  color: var(--text);
+  box-shadow: var(--shadow-2);
+}
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+}
+.quiz-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem 0.6rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--muted) 20%, transparent);
+}
+.quiz-body {
+  padding: 1rem;
+  display: grid;
+  gap: 0.8rem;
+}
+.review-box {
+  background: color-mix(in oklab, var(--card) 94%, transparent);
+  border: 1px solid color-mix(in oklab, var(--muted) 22%, transparent);
+  border-radius: 12px;
+  padding: 0.9rem;
+}
+.review-meta {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  color: var(--muted);
+  font-size: var(--step--1);
+  margin-bottom: 0.4rem;
+}
+.choices {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.pill {
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: color-mix(in oklab, var(--card) 92%, transparent);
+  color: var(--text);
+  transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.pill:hover {
+  transform: translateY(-1px);
+}
+.pill.fake {
+  border-color: color-mix(in oklab, var(--danger) 60%, transparent);
+}
+.pill.real {
+  border-color: color-mix(in oklab, var(--primary) 60%, transparent);
+}
+.explain {
+  border-left: 3px solid color-mix(in oklab, var(--warning) 70%, transparent);
+  padding: 0.6rem 0.8rem;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  font-size: var(--step--1);
+  display: none;
+}
+.score {
+  text-align: right;
+  color: var(--muted);
+  font-size: var(--step--1);
+}
+.quiz-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem 1rem;
+}
+
+/* Tiny helpers */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: var(--step--1);
+  background: color-mix(in oklab, var(--card) 85%, transparent);
+  color: var(--muted);
+  border: 1px solid color-mix(in oklab, var(--muted) 18%, transparent);
+}
+.space-xs {
+  height: 0.5rem;
+}
+.space-s {
+  height: 1rem;
+}
+.space-m {
+  height: 1.6rem;
+}
+.space-l {
+  height: 2.2rem;
+}
+
+/* Responsive fallback if container queries aren't supported */
+@media (width >= 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (width < 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+}

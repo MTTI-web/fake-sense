@@ -1,12 +1,17 @@
 :root {
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
+  /* Brand — Orange scheme */
+  --primary-color: #ff7a3d; /* vivid orange */
+  --secondary-color: #ffb000; /* amber accent */
   --success-color: #28a745;
-  --light-bg: #f8f9fa;
-  --dark-text: #343a40;
-  --light-text: #ffffff;
-  --border-color: #dee2e6;
-  --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+  /* Dark theme surfaces */
+  --light-bg: #0b0c10; /* page background (kept var name for drop-in) */
+  --light-text: #121317; /* used as card surface in original CSS */
+  --dark-text: #e9edf1; /* main text on dark */
+
+  /* Neutrals */
+  --border-color: #232a36; /* subtle border for dark surfaces */
+  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
 /* Optional global reset to keep pseudo-elements predictable */
@@ -17,6 +22,8 @@
 }
 
 body {
+  position: relative; /* needed for the gradient overlay */
+  isolation: isolate; /* keep overlay behind content */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   padding: 20px;
@@ -26,15 +33,43 @@ body {
   color: var(--dark-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
+/* Hero-like orange gradient bound to page height */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+      120% 100% at 85% 0%,
+      color-mix(in oklab, var(--secondary-color) 28%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      120% 100% at 0% 70%,
+      color-mix(in oklab, var(--primary-color) 24%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--light-text) 98%, transparent),
+      color-mix(in oklab, var(--light-text) 90%, transparent)
+    );
+  filter: saturate(1.1);
+}
+
+/* Quiz container as elevated card on dark */
 #quiz-container {
   background-color: var(--light-text);
   padding: 40px;
   border-radius: 12px;
   box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
 }
 
+/* Headings */
 h1 {
   color: var(--primary-color);
   text-align: center;
@@ -42,6 +77,7 @@ h1 {
   font-weight: 700;
 }
 
+/* Groups */
 .question-group {
   margin-bottom: 25px;
   padding-bottom: 25px;
@@ -59,11 +95,12 @@ h1 {
   font-weight: 600;
   font-size: 1.1em;
   margin-bottom: 20px;
+  color: var(--dark-text);
 }
 
 /* Option row */
 .option {
-  background: #fdfdfd;
+  background: #161a24; /* slightly lighter than card surface */
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 15px;
@@ -72,12 +109,13 @@ h1 {
   transition: all 0.2s ease-in-out;
   display: flex;
   align-items: center;
+  color: var(--dark-text);
 }
 
 /* Hover effect */
 .option:hover {
   border-color: var(--primary-color);
-  background-color: #f0f8ff;
+  background-color: #1b2030; /* subtle lift */
 }
 
 /* Hide native radio */
@@ -103,9 +141,8 @@ h1 {
   height: 20px;
   border: 2px solid var(--border-color);
   border-radius: 50%;
-  background: var(--light-text);
+  background: #0f1219; /* deeper surface for contrast */
   transform: translateY(-50%);
-  /* Important: include border in the 20px box so centering math is correct */
   box-sizing: border-box;
 }
 
@@ -127,7 +164,6 @@ h1 {
 .option input[type="radio"]:checked + .option-label::after {
   transform: translateY(-50%) scale(1);
 }
-
 .option input[type="radio"]:checked + .option-label::before {
   border-color: var(--primary-color);
 }
@@ -138,7 +174,7 @@ button {
   width: 100%;
   padding: 15px 20px;
   border: none;
-  background-image: linear-gradient(to right, #007bff, #0056b3);
+  background-image: linear-gradient(to right, #ff7a3d, #e65f00);
   color: white;
   cursor: pointer;
   border-radius: 8px;
@@ -146,12 +182,12 @@ button {
   font-weight: 600;
   margin-top: 20px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(230, 95, 0, 0.25);
 }
 
 button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(230, 95, 0, 0.35);
 }
 
 /* Results */
@@ -159,23 +195,24 @@ button:hover {
   margin-top: 30px;
   padding: 20px;
   border-radius: 8px;
-  background-color: var(--light-bg);
+  background-color: #12151d; /* dark panel matching surfaces */
   border: 1px solid var(--border-color);
   text-align: center;
   font-size: 1.3em;
   font-weight: 600;
   display: none; /* Hidden by default */
   transition: all 0.3s ease;
+  color: var(--dark-text);
 }
 
 #quiz-results.success {
-  background-color: #e9f7ef;
-  border-color: #a3d9b8;
-  color: #1d7a46;
+  background-color: rgba(40, 167, 69, 0.12);
+  border-color: rgba(40, 167, 69, 0.35);
+  color: #86efac;
 }
 
 #quiz-results.fail {
-  background-color: #fdeaea;
-  border-color: #f5b9b9;
-  color: #d9534f;
+  background-color: rgba(217, 83, 79, 0.12);
+  border-color: rgba(217, 83, 79, 0.4);
+  color: #fda4af;
 }

@@ -1,48 +1,411 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fake Review Detector Options</title>
-    <style>
-      body {
-        font-family: sans-serif;
-        padding: 20px;
-        max-width: 500px;
-        margin: auto;
-      }
-      form div {
-        margin-bottom: 15px;
-      }
-      label {
-        display: block;
-        margin-bottom: 5px;
-      }
-      input[type="text"],
-      input[type="password"] {
-        width: 100%;
-        padding: 8px;
-        box-sizing: border-box;
-      }
-      button {
-        padding: 10px 15px;
-        border: none;
-        background-color: #007bff;
-        color: white;
-        cursor: pointer;
-      }
-      #status {
-        color: green;
-        margin-top: 10px;
-      }
-    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VerifyWise — Spot Fake Reviews Instantly</title>
+    <meta
+      name="description"
+      content="Detect fake reviews on Amazon and Flipkart, and practice with a built-in quiz powered by your training data."
+    />
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <h1>Options</h1>
+    <!-- Header -->
+    <header>
+      <div class="container nav">
+        <a href="#" class="brand" aria-label="VerifyWise Home">
+          <span class="logo" aria-hidden="true">
+            <!-- Shield check icon -->
+            <svg viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 3l7 3v5c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-3Z"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="m9 12 2 2 4-4"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+          VerifyWise
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#features">Features</a>
+          <a href="#team">Team</a>
+          <a href="#quiz-open" id="open-quiz">Try Quiz</a>
+          <button class="cta" id="install">
+            <!-- Extension icon -->
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 3v6m0 0 3-3m-3 3L9 6M5 13v5a3 3 0 003 3h8a3 3 0 003-3v-8a3 3 0 00-3-3h-1"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Add to Chrome
+          </button>
+        </nav>
+      </div>
+    </header>
 
-    <button type="button" id="test-api">Test API Connection</button>
-    <div id="status"></div>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="tag">Amazon + Flipkart</div>
+          <div class="space-xs"></div>
+          <h1>Spot fake reviews before they sway your cart</h1>
+          <p>
+            VerifyWise flags suspicious patterns, highlights trustworthy
+            signals, and lets you practice with a quick quiz so you can outsmart
+            fake reviews on Amazon and Flipkart.
+          </p>
+          <div class="actions">
+            <button class="cta" id="cta-quiz">
+              <!-- Play icon -->
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M8 5v14l11-7L8 5z" fill="currentColor" />
+              </svg>
+              Try the Quiz
+            </button>
+            <a class="cta secondary" href="#features">Explore Features</a>
+          </div>
+          <div class="space-s"></div>
+          <div class="tag">
+            Privacy-first · No tracking · Works in your browser
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <script src="options.js"></script>
+    <!-- Features -->
+    <section id="features" class="section features">
+      <div class="container">
+        <h2 style="font-size: var(--step-3); margin: 0 0 0.6rem">
+          Everything you need to trust what you read
+        </h2>
+        <p
+          style="
+            color: var(--muted);
+            font-size: var(--step-0);
+            margin: 0 0 1rem;
+          "
+        >
+          Real-time checks, clear explanations, and a training-data quiz to
+          sharpen your instincts.
+        </p>
+        <div class="feature-grid">
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M3 12h18M3 6h18M3 18h18"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <h3>Real-time detection</h3>
+            <p>
+              Flags repetition, burst patterns, reviewer anomalies, and rating
+              skews right on product pages.
+            </p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 3l9 5-9 5-9-5 9-5Zm0 7l9 5-9 5-9-5 9-5Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <h3>Amazon + Flipkart</h3>
+            <p>
+              Works across key shopping journeys with consistent UI so you can
+              compare trust signals easily.
+            </p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 7v10M7 12h10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <h3>Explainability</h3>
+            <p>
+              Shows why a review looks suspicious with highlighted phrases,
+              timelines, and reviewer history cues.
+            </p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M4 7a3 3 0 013-3h10a3 3 0 013 3v10a3 3 0 01-3 3H7a3 3 0 01-3-3V7Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <path d="M8 9h8v6H8z" stroke="currentColor" stroke-width="2" />
+              </svg>
+            </div>
+            <h3>Privacy-first</h3>
+            <p>
+              Runs locally in your browser with minimal network calls and no
+              tracking or profiling.
+            </p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 3l7 4v10l-7 4-7-4V7l7-4Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <path d="M10 9l4 3-4 3V9Z" fill="currentColor" />
+              </svg>
+            </div>
+            <h3>Quiz mode</h3>
+            <p>
+              Practice on curated training examples and get instant feedback to
+              build review-spotting skills.
+            </p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M4 7h16M4 12h16M4 17h16"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <path
+                  d="M8 7v10M16 7v10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <h3>Light + dark</h3>
+            <p>
+              Automatically adapts to your system theme for comfortable reading
+              day or night.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section id="team" class="section">
+      <div class="container">
+        <h2 style="font-size: var(--step-3); margin: 0 0 0.6rem">
+          Meet the team
+        </h2>
+        <p
+          style="
+            color: var(--muted);
+            font-size: var(--step-0);
+            margin: 0 0 1rem;
+          "
+        >
+          A small crew obsessed with trustworthy shopping and practical ML.
+        </p>
+        <div class="team-grid">
+          <article class="member">
+            <div class="avatar">AK</div>
+            <h4>Akira Kumar</h4>
+            <div class="role">Founder · ML Engineer</div>
+            <p>
+              Leads detection models and on-device inference for lightning-fast
+              results.
+            </p>
+          </article>
+          <article class="member">
+            <div class="avatar">RS</div>
+            <h4>Riya Shah</h4>
+            <div class="role">Design · Research</div>
+            <p>
+              Designs frictionless UI and explainability for transparent
+              decisions.
+            </p>
+          </article>
+          <article class="member">
+            <div class="avatar">JM</div>
+            <h4>Jai Mehta</h4>
+            <div class="role">Frontend · Systems</div>
+            <p>
+              Builds robust browser integrations with a focus on privacy and
+              resilience.
+            </p>
+          </article>
+          <article class="member">
+            <div class="avatar">SI</div>
+            <h4>Sana Iqbal</h4>
+            <div class="role">Data · QA</div>
+            <p>
+              Curates training data and stress-tests models to reduce false
+              positives.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Get the extension -->
+    <section id="get" class="section get">
+      <div class="container get-inner">
+        <div>
+          <h2 style="font-size: var(--step-3); margin: 0 0 0.6rem">
+            Get the extension
+          </h2>
+          <p
+            style="
+              color: var(--muted);
+              font-size: var(--step-0);
+              margin: 0 0 1rem;
+            "
+          >
+            Install VerifyWise on your favorite browser and shop with
+            confidence.
+          </p>
+          <div class="store-buttons">
+            <button
+              class="store"
+              id="install-chrome"
+              aria-label="Add to Chrome"
+            >
+              <!-- Chrome logo -->
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="9"
+                  stroke="currentColor"
+                  stroke-width="2"
+                ></circle>
+                <circle cx="12" cy="12" r="3.5" fill="currentColor"></circle>
+              </svg>
+              Add to Chrome
+            </button>
+            <button
+              class="store"
+              id="install-firefox"
+              aria-label="Add to Firefox"
+            >
+              <!-- Firefox flame-ish -->
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M6 9c1-4 6-6 10-3 2 1 3 3 3 6a7 7 0 11-14 0c0-1 .3-2 1-3Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <path
+                  d="M10 17c2 0 4-2 4-4 0-1-.5-2-1.2-2.7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Add to Firefox
+            </button>
+          </div>
+        </div>
+        <div class="card" style="min-height: 160px">
+          <h3 style="margin: 0.2rem 0 0.4rem; font-size: var(--step-1)">
+            What you’ll get
+          </h3>
+          <ul
+            style="
+              margin: 0;
+              padding-left: 1rem;
+              color: var(--muted);
+              font-size: var(--step-0);
+              line-height: 1.6;
+            "
+          >
+            <li>On-page fake review detection</li>
+            <li>Clear reasons and highlights</li>
+            <li>Training-data quiz mode</li>
+            <li>Privacy-first, no tracking</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div
+        class="container"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 0.6rem;
+          flex-wrap: wrap;
+        "
+      >
+        <span>© <span id="year"></span> VerifyWise</span>
+        <span>Built with modern CSS · No frameworks</span>
+      </div>
+    </footer>
+
+    <!-- Quiz Modal -->
+    <dialog id="quiz" aria-labelledby="quiz-title">
+      <div class="quiz-head">
+        <h3 id="quiz-title" style="margin: 0; font-size: var(--step-2)">
+          Fake Review Quiz
+        </h3>
+        <button class="cta secondary" id="close-quiz">Close</button>
+      </div>
+      <div class="quiz-body">
+        <div class="score" id="score">Q1 of 5 · Score 0</div>
+        <div class="review-box">
+          <div class="review-meta">
+            <span class="tag" id="source">Source: —</span>
+            <span class="tag" id="hint"
+              >Hint: Look for repetition, vagueness, timing</span
+            >
+          </div>
+          <p id="review-text" style="margin: 0; font-size: var(--step-0)"></p>
+        </div>
+        <div class="choices">
+          <button class="pill fake" id="btn-fake">Mark as Fake</button>
+          <button class="pill real" id="btn-real">Mark as Genuine</button>
+        </div>
+        <div class="explain" id="explain"></div>
+      </div>
+      <div class="quiz-actions">
+        <button class="cta secondary" id="skip">Skip</button>
+        <button class="cta" id="next" disabled>Next</button>
+      </div>
+    </dialog>
+
+    <script src="./script.js"></script>
   </body>
 </html>
