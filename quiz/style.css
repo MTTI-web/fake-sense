@@ -42,7 +42,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center; /* vertical centering */
-
   /* Make sure the body spans the viewport height so centering works */
   min-height: 100vh;
 }
@@ -82,9 +81,7 @@ body::before {
   width: 100%;
 
   /* Let the card scroll vertically if content overflows */
-  max-height: calc(
-    100vh - 40px
-  ); /* viewport minus body padding (20px top + 20px bottom) */
+  max-height: calc(100vh - 40px); /* viewport minus body padding */
   overflow-y: auto;
   overscroll-behavior: contain; /* keep scroll contained to the card */
 }
@@ -198,6 +195,7 @@ h1 {
 .option input[type="radio"]:checked + .option-label::after {
   transform: translateY(-50%) scale(1);
 }
+
 .option input[type="radio"]:checked + .option-label::before {
   border-color: var(--primary-color);
 }
@@ -226,7 +224,7 @@ button {
 
 button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(230, 95, 0, 0.35);
+  box-shadow: 0 6px 20px rgba(230, 95, 0, 0, 0.35);
 }
 
 button:disabled {
@@ -279,7 +277,6 @@ button:disabled {
 .summary {
   margin-top: 18px;
 }
-
 .summary .question-group {
   background: #12151d;
   border-radius: 8px;
@@ -287,32 +284,68 @@ button:disabled {
   border: 1px solid var(--border-color);
   box-shadow: var(--card-shadow);
 }
-
 .summary .summary-title {
   font-weight: 700;
   margin-bottom: 8px;
   color: var(--dark-text);
 }
-
 .summary .answer {
   margin-top: 6px;
   font-weight: 500;
 }
-
 .summary .answer.correct {
   color: #86efac;
 }
-
 .summary .answer.incorrect {
   color: #fda4af;
 }
-
 .summary .answer.correct-key {
   color: #cfe3ff;
 }
-
 .summary-actions {
   display: flex;
   justify-content: center;
   margin-top: 16px;
+}
+
+/* Inline explanation block after checking an answer */
+.explain-block {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: #12151d;
+  color: var(--dark-text);
+}
+.explain-block.ok {
+  border-color: rgba(40, 167, 69, 0.35);
+}
+.explain-block.bad {
+  border-color: rgba(217, 83, 79, 0.4);
+}
+
+.explain-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--dark-text);
+}
+.explain-text {
+  margin: 4px 0 6px 0;
+  color: var(--dark-text);
+}
+.explain-why {
+  margin-top: 6px;
+}
+.explain-why .drivers-title {
+  font-weight: 600;
+  margin-top: 6px;
+  color: var(--dark-text);
+}
+.explain-why ul {
+  margin: 4px 0 0 18px;
+  padding: 0;
+}
+.explain-why li {
+  margin: 2px 0;
+  color: var(--dark-text);
 }

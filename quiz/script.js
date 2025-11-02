@@ -11,6 +11,7 @@ const SUMMARY_TITLE = "Summary";
 let QUESTIONS = [];
 let CURRENT_INDEX = 0;
 let USER_ANSWERS = []; // selected choice index or null per question
+let REVEALED = []; // whether explanation has been shown for each Q
 
 // Utilities
 function el(tag, opts = {}) {
@@ -24,7 +25,21 @@ function el(tag, opts = {}) {
 }
 
 function getHeadingEl() {
-  return document.querySelector("#quiz-container h1"); // select the heading element [web:69]
+  return document.querySelector("#quiz-container h1");
+}
+
+// Minimal safe markdown-to-HTML for bold and newlines
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+function renderMarkdownBold(s) {
+  const escaped = escapeHtml(s ?? "");
+  const withBreaks = escaped.replace(/\r?\n/g, "<br>");
+  // Convert **bold** to <strong>bold</strong>
+  return withBreaks.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 }
 
 /**
@@ -66,74 +81,89 @@ function renderQuestionGroup(idx, q, preselectedIdx = null) {
   return group;
 }
 
-async function fetchQuestions(n = 10) {
-  const url = `${API_BASE}/quiz-questions?n=${encodeURIComponent(n)}`;
-  const res = await fetch(url, { method: "GET" });
-  if (!res.ok) {
-    let msg = `Failed to load quiz questions (HTTP ${res.status})`;
-    try {
-      const payload = await res.json();
-      if (payload && payload.error) msg = payload.error;
-    } catch (_) {}
-    throw new Error(msg);
+function readSelection() {
+  const checked = document.querySelector('input[name="choice"]:checked');
+  return checked ? parseInt(checked.value, 10) : null;
+}
+
+function setChoicesDisabled(disabled) {
+  document.querySelectorAll('input[name="choice"]').forEach((inp) => {
+    inp.disabled = disabled;
+  });
+}
+
+// Render explanation for the current question using API fields
+function showCurrentExplanation() {
+  const form = document.getElementById("quiz-form");
+  const existing = form.querySelector(".explain-block");
+  if (existing) existing.remove();
+
+  const q = QUESTIONS[CURRENT_INDEX];
+  const userIdx = USER_ANSWERS[CURRENT_INDEX];
+  const correct = userIdx === q.answer_index;
+
+  const block = el("div", {
+    className: `explain-block ${correct ? "ok" : "bad"}`,
+  });
+
+  const title = el("div", {
+    className: "explain-title",
+    text: correct ? "Correct" : "Incorrect",
+  });
+  block.appendChild(title);
+
+  // Prefer explanation_text directly if present (now with markdown-bold support)
+  if (q.explanation_text) {
+    const p = el("div", {
+      className: "explain-text",
+      html: renderMarkdownBold(q.explanation_text),
+    });
+    block.appendChild(p);
   }
-  const payload = await res.json();
-  if (!payload || !Array.isArray(payload.questions)) {
-    throw new Error("Malformed response: missing questions array");
+
+  // Also render top drivers if available
+  const ed = q.explanation_data || {};
+  const fake = Array.isArray(ed.top_fake_drivers)
+    ? ed.top_fake_drivers.slice(0, 3)
+    : [];
+  const genu = Array.isArray(ed.top_genuine_drivers)
+    ? ed.top_genuine_drivers.slice(0, 3)
+    : [];
+
+  if (fake.length || genu.length) {
+    const why = el("div", { className: "explain-why" });
+
+    if (fake.length) {
+      why.appendChild(
+        el("div", { className: "drivers-title", text: "Top fake drivers" })
+      );
+      const ul = el("ul", { className: "drivers fake" });
+      fake.forEach((d) => {
+        ul.appendChild(el("li", { text: `${d.feature} (${d.contribution})` }));
+      });
+      why.appendChild(ul);
+    }
+
+    if (genu.length) {
+      why.appendChild(
+        el("div", { className: "drivers-title", text: "Top genuine drivers" })
+      );
+      const ul2 = el("ul", { className: "drivers genuine" });
+      genu.forEach((d) => {
+        ul2.appendChild(el("li", { text: `${d.feature} (${d.contribution})` }));
+      });
+      why.appendChild(ul2);
+    }
+
+    block.appendChild(why);
   }
-  return payload.questions;
+
+  form.appendChild(block);
 }
 
 function updateProgress() {
   const prog = document.getElementById("progress");
   prog.textContent = `Question ${CURRENT_INDEX + 1} of ${QUESTIONS.length}`;
-}
-
-function renderCurrentQuestion() {
-  const form = document.getElementById("quiz-form");
-  const resultsDiv = document.getElementById("quiz-results");
-  const summaryDiv = document.getElementById("quiz-summary");
-  const prevBtn = document.getElementById("prev-btn");
-  const nextBtn = document.getElementById("next-btn");
-  const finishBtn = document.getElementById("finish-btn");
-  const controls = document.getElementById("controls");
-  const progress = document.getElementById("progress");
-  const heading = getHeadingEl();
-
-  // Ensure quiz UI is visible when rendering questions again
-  controls.classList.remove("hidden"); // show controls [web:46]
-  progress.classList.remove("hidden"); // show progress [web:46]
-  summaryDiv.classList.add("hidden"); // hide summary [web:46]
-  resultsDiv.style.display = "none"; // hide banner
-  resultsDiv.className = "";
-  resultsDiv.textContent = "";
-
-  // Restore heading to quiz title
-  if (heading) heading.textContent = QUIZ_TITLE; // set visible text content [web:61]
-
-  // Clear and render the single current question
-  form.innerHTML = ""; // remove any previous question content [web:41]
-  const q = QUESTIONS[CURRENT_INDEX];
-  const pre = USER_ANSWERS[CURRENT_INDEX] ?? null;
-  const group = renderQuestionGroup(CURRENT_INDEX + 1, q, pre);
-  form.appendChild(group);
-
-  // Progress + Controls state
-  updateProgress();
-
-  prevBtn.disabled = CURRENT_INDEX === 0;
-  const onLast = CURRENT_INDEX === QUESTIONS.length - 1;
-  nextBtn.classList.toggle("hidden", onLast);
-  finishBtn.classList.toggle("hidden", !onLast);
-
-  // Scroll card to top for better UX
-  const container = document.getElementById("quiz-container");
-  container.scrollTop = 0;
-}
-
-function readSelection() {
-  const checked = document.querySelector('input[name="choice"]:checked');
-  return checked ? parseInt(checked.value, 10) : null;
 }
 
 function computeScore() {
@@ -155,18 +185,19 @@ function showSummary() {
   const heading = getHeadingEl();
 
   // Update heading to "Summary"
-  if (heading) heading.textContent = SUMMARY_TITLE; // set summary heading text [web:61]
+  if (heading) heading.textContent = SUMMARY_TITLE;
 
   // Hide/remove the last rendered question
-  form.innerHTML = ""; // clears the question markup so it disappears [web:41]
-  controls.classList.add("hidden"); // hide nav controls so only summary shows [web:46]
-  progress.classList.add("hidden"); // hide "Question X of Y" [web:46]
+  form.innerHTML = "";
+  controls.classList.add("hidden");
+  progress.classList.add("hidden");
 
   // Score banner
   const score = computeScore();
   const pct = Math.round((score / QUESTIONS.length) * 100);
   resultsDiv.style.display = "block";
   resultsDiv.textContent = `You scored ${score} out of ${QUESTIONS.length} (${pct}%)`;
+  resultsDiv.className = "";
   resultsDiv.classList.add(pct >= 70 ? "success" : "fail");
 
   // Build full summary
@@ -186,18 +217,26 @@ function showSummary() {
     const userText =
       userIdx === null ? "You did not answer" : q.choices[userIdx];
     const correctText = q.choices[q.answer_index];
-
     const correct = userIdx !== null && userIdx === q.answer_index;
 
     const userLine = el("div", {
       className: correct ? "answer correct" : "answer incorrect",
       text: correct ? `Your answer: ${userText} ✓` : `Your answer: ${userText}`,
     });
-
     const correctLine = el("div", {
       className: "answer correct-key",
       text: `Correct: ${correctText}`,
     });
+
+    // Include explanation_text in summary with markdown-bold support
+    if (q.explanation_text) {
+      wrap.appendChild(
+        el("div", {
+          className: "answer",
+          html: renderMarkdownBold(q.explanation_text),
+        })
+      );
+    }
 
     wrap.appendChild(userLine);
     wrap.appendChild(correctLine);
@@ -214,59 +253,170 @@ function showSummary() {
   retry.addEventListener("click", () => {
     CURRENT_INDEX = 0;
     USER_ANSWERS = new Array(QUESTIONS.length).fill(null);
-
-    // Reset panels and return to first question
+    REVEALED = new Array(QUESTIONS.length).fill(false);
     resultsDiv.style.display = "none";
     container.classList.add("hidden");
-    renderCurrentQuestion(); // also restores heading to quiz title
+    renderCurrentQuestion();
   });
   actions.appendChild(retry);
   container.appendChild(actions);
-
   container.classList.remove("hidden");
 
   // Ensure the card scrolls to top for the summary
   card.scrollTop = 0;
 }
 
-function wireControls() {
+// Main screen render
+function renderCurrentQuestion() {
+  const form = document.getElementById("quiz-form");
+  const resultsDiv = document.getElementById("quiz-results");
+  const summaryDiv = document.getElementById("quiz-summary");
   const prevBtn = document.getElementById("prev-btn");
   const nextBtn = document.getElementById("next-btn");
   const finishBtn = document.getElementById("finish-btn");
+  const controls = document.getElementById("controls");
+  const progress = document.getElementById("progress");
+  const heading = getHeadingEl();
+
+  // Ensure quiz UI is visible when rendering questions again
+  controls.classList.remove("hidden");
+  progress.classList.remove("hidden");
+  summaryDiv.classList.add("hidden");
+  resultsDiv.style.display = "none";
+  resultsDiv.className = "";
+  resultsDiv.textContent = "";
+
+  // Restore heading to quiz title
+  if (heading) heading.textContent = QUIZ_TITLE;
+
+  // Clear and render the single current question
+  form.innerHTML = "";
+  const q = QUESTIONS[CURRENT_INDEX];
+  const pre = USER_ANSWERS[CURRENT_INDEX] ?? null;
+  const group = renderQuestionGroup(CURRENT_INDEX + 1, q, pre);
+  form.appendChild(group);
+
+  // Progress + Controls state
+  updateProgress();
+  prevBtn.disabled = CURRENT_INDEX === 0;
+
+  // Unified primary button
+  const onLast = CURRENT_INDEX === QUESTIONS.length - 1;
+  finishBtn.classList.add("hidden");
+  nextBtn.classList.remove("hidden");
+
+  if (REVEALED[CURRENT_INDEX]) {
+    // already checked: disable and show explanation
+    setChoicesDisabled(true);
+    showCurrentExplanation();
+    nextBtn.textContent = onLast ? "Show Summary" : "Next Question";
+  } else {
+    setChoicesDisabled(false);
+    nextBtn.textContent = "Check Answer";
+  }
+
+  // Scroll card to top for better UX
+  const container = document.getElementById("quiz-container");
+  container.scrollTop = 0;
+}
+
+function wireControls() {
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
 
   prevBtn.addEventListener("click", () => {
-    USER_ANSWERS[CURRENT_INDEX] = readSelection();
+    if (!REVEALED[CURRENT_INDEX]) {
+      USER_ANSWERS[CURRENT_INDEX] = readSelection();
+    }
     if (CURRENT_INDEX > 0) {
       CURRENT_INDEX -= 1;
       renderCurrentQuestion();
     }
   });
 
+  // Unified handler: first click checks, second click advances (or shows summary on last)
   nextBtn.addEventListener("click", () => {
-    USER_ANSWERS[CURRENT_INDEX] = readSelection();
-    if (CURRENT_INDEX < QUESTIONS.length - 1) {
+    const onLast = CURRENT_INDEX === QUESTIONS.length - 1;
+
+    if (!REVEALED[CURRENT_INDEX]) {
+      const sel = readSelection();
+      if (sel === null) {
+        // brief inline nudge using the existing banner space
+        const resultsDiv = document.getElementById("quiz-results");
+        resultsDiv.style.display = "block";
+        resultsDiv.className = "fail";
+        resultsDiv.textContent = "Please choose an option to check the answer.";
+        setTimeout(() => {
+          resultsDiv.style.display = "none";
+          resultsDiv.className = "";
+          resultsDiv.textContent = "";
+        }, 1200);
+        return;
+      }
+      USER_ANSWERS[CURRENT_INDEX] = sel;
+      REVEALED[CURRENT_INDEX] = true;
+      setChoicesDisabled(true);
+      showCurrentExplanation();
+      nextBtn.textContent = onLast ? "Show Summary" : "Next Question";
+      return; // stay on the question after checking
+    }
+
+    // Already revealed: advance or show summary
+    if (onLast) {
+      showSummary();
+    } else {
       CURRENT_INDEX += 1;
       renderCurrentQuestion();
     }
   });
+}
 
-  finishBtn.addEventListener("click", () => {
-    USER_ANSWERS[CURRENT_INDEX] = readSelection();
-    showSummary();
-  });
+// API fetch — robust to payload wrapping either at root or under .payload
+async function fetchQuestions(n = 10) {
+  const candidates = [
+    `${API_BASE}/quiz-questions?n=${encodeURIComponent(n)}`,
+    `${API_BASE}/quiz?n=${encodeURIComponent(n)}`,
+    `${API_BASE}/questions?n=${encodeURIComponent(n)}`,
+  ];
+
+  let lastErr = null;
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { method: "GET" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const payload = json && json.payload ? json.payload : json;
+      if (payload && Array.isArray(payload.questions)) {
+        return payload;
+      }
+      if (Array.isArray(json)) {
+        return {
+          count: json.length,
+          questions: json,
+          distribution: null,
+          single_class: false,
+        };
+      }
+      throw new Error("Malformed response (no questions array)");
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error("Failed to load quiz questions");
 }
 
 async function loadQuiz(n = 10) {
   const resultsDiv = document.getElementById("quiz-results");
-
   try {
-    QUESTIONS = await fetchQuestions(n);
+    const data = await fetchQuestions(n);
+    QUESTIONS = data.questions;
     USER_ANSWERS = new Array(QUESTIONS.length).fill(null);
+    REVEALED = new Array(QUESTIONS.length).fill(false);
     wireControls();
     renderCurrentQuestion();
   } catch (err) {
     resultsDiv.style.display = "block";
-    resultsDiv.classList.add("fail");
+    resultsDiv.className = "fail";
     resultsDiv.textContent = `Error: ${err.message}`;
   }
 }
