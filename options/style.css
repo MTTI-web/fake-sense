@@ -116,7 +116,7 @@ header {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), var(--primary));
+  background: linear-gradient(135deg, var(white), var(transparent));
   display: grid;
   place-items: center;
   box-shadow: var(--shadow-1);

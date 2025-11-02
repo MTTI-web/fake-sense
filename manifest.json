@@ -9,8 +9,8 @@
   },
   "icons": {
     "16": "static/icons/icon16.png",
-    "48": "static/icons/icon48.png",
-    "128": "static/icons/icon128.png"
+    "48": "static/logo.svg",
+    "128": "static/logo.svg"
   },
   "permissions": ["storage"],
   "host_permissions": [
